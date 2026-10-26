@@ -1,0 +1,72 @@
+# Referencia canónica FRONTEND: `learning-center-main`
+
+## Uso y prioridad
+Este ZIP es la plantilla de referencia aportada por el usuario para organizar proyectos FRONTEND de PC1 y Parcial. Debe servir como patrón arquitectónico cuando la actividad lo permita, no como fuente para copiar funcionalidades de autenticación o CRUD que no estén solicitadas. El enunciado y la rúbrica de la actividad actual siempre prevalecen.
+
+## Stack observado en `package.json`
+- Vue `^3.5.43`, Vite `^8.3.0`, JavaScript ES modules.
+- PrimeVue `^5.0.1`, `@primeuix/themes` `^3.0.1`, preset Material en `src/main.js`.
+- PrimeFlex `^4.0.0`, PrimeIcons `^8.0.1`.
+- Axios `^1.20.0`, Pinia `^4.0.3`, Vue Router `^5.3.1`, Vue I18n `^11.4.12`.
+- JSON Server `^0.17.4` para mock API.
+- Scripts: `npm run dev`, `npm run build`, `npm run preview`.
+
+Estos son los valores del ZIP aportado, no una exigencia fija para cada examen. Comprueba siempre las versiones pedidas en el enunciado y la compatibilidad entre ellas.
+
+## Organización observada
+```text
+learning-center-main/
+  server/
+    db.json
+    routes.json
+    start.sh
+  src/
+    app.vue
+    main.js
+    router.js
+    pinia.js
+    i18n.js
+    locales/{en,es}.json
+    iam/
+      domain/{sign-in.command.js,sign-up.command.js,user.entity.js}
+      application/iam.store.js
+      infrastructure/{iam-api.js,assemblers,resources,guards,interceptors}
+      presentation/{iam-routes.js,components,views}
+    publishing/
+      domain/model/{category.entity.js,tutorial.entity.js}
+      application/publishing.store.js
+      infrastructure/{publishing-api.js,category.assembler.js,tutorial.assembler.js}
+      presentation/publishing-routes.js
+      presentation/views/{category-form.vue,category-list.vue,tutorial-form.vue,tutorial-list.vue}
+    shared/
+      infrastructure/{base-api.js,base-endpoint.js}
+      presentation/components/{layout.vue,footer-content.vue,language-switcher.vue}
+      presentation/views/{home.vue,about.vue,page-not-found.vue}
+    assets/, style.css
+```
+
+## Patrón por capas y flujo de datos
+1. **Presentation**: vistas/componentes Vue recogen interacción del usuario y muestran estado. Las rutas de bounded contexts viven en sus módulos de presentación (`publishing-routes.js`); `router.js` las integra. Usa importaciones lazy cuando el enunciado/plantilla lo exige.
+2. **Application**: el store Pinia (`publishing.store.js`) coordina operaciones, estado, errores, consultas y cambios. La vista debe interactuar con el store, no llamar a Axios de forma dispersa.
+3. **Infrastructure**: `BaseApi` crea una instancia Axios configurada con la base URL; `BaseEndpoint` ofrece operaciones HTTP reutilizables; `PublishingApi` configura rutas concretas; assemblers convierten respuestas/Resources a instancias de entidades.
+4. **Domain**: clases JavaScript como `Category` y `Tutorial` encapsulan el modelo de dominio y deben permanecer libres de detalles Vue/HTTP.
+5. **Shared**: solo para piezas compartidas de verdad (infraestructura base, layout, idioma, footer, vistas comunes), no para mezclar la lógica de cada dominio.
+
+Flujo típico: vista → store Pinia → API específica → BaseApi/Axios → backend; la respuesta se convierte con assembler a entidades antes de actualizar el store.
+
+## Convenciones observadas / requeridas según enunciado
+- Subdominios/bounded contexts independientes, por ejemplo `publishing` y `iam`; el contexto nuevo de la actividad puede ser `music`, `recipes`, `plot-management`, `assets`, etc., según el enunciado.
+- Archivos y nombres físicos en kebab-case. La guía de examen puede exigir sufijos `.component.vue`, `.service.js`, `.entity.js`; la plantilla existente también contiene nombres de vistas `.vue`, store `.store.js` y assembler `.assembler.js`. Sigue el patrón explícito de la actividad y sé consistente.
+- Componentes PrimeVue registrados con prefijo `pv-` en `main.js`, por ejemplo `<pv-button>`, `<pv-card>`, `<pv-toolbar>`.
+- Usa JSDoc/summary y autor cuando lo solicite la actividad. Los textos de UI a menudo deben ser inglés; i18n EN/ES solo cuando se solicita.
+- `router.js` configura rutas comunes y fallback; la plantilla separa las rutas de `publishing` en un módulo. Observa el requisito para lazy loading, root redirect, rutas anidadas y `page-not-found` en cada actividad específica.
+- `server/db.json` y `server/routes.json` dan soporte al JSON Server. No inventes colecciones: usa el archivo de datos adjunto/real.
+
+## Límites y observaciones reales del ZIP
+- El README dice que IAM está implementado, pero indica que las rutas IAM no están integradas en el router por defecto; el `router.js` tiene la integración de IAM comentada. No afirmar que autenticación está habilitada o que todo el flujo está conectado sin comprobarlo.
+- La plantilla incluye ejemplos CRUD para categorías y tutoriales, i18n y navegación, pero no significa que todo examen requiera CRUD, i18n o routing.
+- El ZIP contiene `.env.development` y `.env.production`. Nunca copies sus valores al prompt, documentación ni fuentes de conocimiento. Si vas a compartir el proyecto o subir archivos a un agente, elimina/oculta cualquier token o clave real. Las variables `VITE_*` se exponen al código del navegador y no deben tratarse como secretos.
+- El agente no ha ejecutado este proyecto solo por haber leído la documentación. Solo debe declarar el build verificado si ejecuta `npm run build` y observa su resultado.
+
+## Cómo usar esta referencia para PC1 / Parcial
+Cuando el usuario diga PC1 o Parcial, la opción inicial habitual es este estilo frontend, pero se debe comprobar el PDF actual. Extrae el dominio solicitado, crea solo capas/carpetas necesarias, aplica el flujo API/store/assembler, respeta todas las funciones fuera de alcance y prioriza la rúbrica real. No copies IAM, autenticación, CRUD ni estructura de publishing a menos que el problema lo requiera.

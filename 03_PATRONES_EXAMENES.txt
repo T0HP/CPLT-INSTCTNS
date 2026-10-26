@@ -1,0 +1,116 @@
+# Patrones de los exámenes y prácticas de Aplicaciones Web
+
+## Para qué sirve este documento
+
+Este archivo resume patrones observados en los diez PDFs aportados. Los exámenes son referencias históricas: **no permiten conocer con certeza el próximo enunciado**. Ante una actividad nueva, el PDF y los archivos de esa actividad mandan sobre este resumen. Los PDFs de Hertz titulados `Caso Hertz` y `Caso Hertz (1)` son esencialmente duplicados del mismo enunciado PC2 202520, no dos patrones independientes.
+
+## 1. Qué tipos de evaluación aparecen
+
+| Familia | Ejemplos de los archivos aportados | Trabajo principal | Tecnologías/arquitectura recurrentes |
+|---|---|---|---|
+| Frontend simple que consume API pública | Recipes 2024-1, SuperHero PC1 2024-2, Music Explorer PC1 2026-1 | Mostrar recursos del API en cards/listas, toolbar y footer | Vue 3 + Vite, JavaScript, Axios, PrimeVue, estructura `public` + dominio funcional |
+| Frontend con selección/filtrado y cambio de idioma | MealAll PC1 2025-1 | Lista de categorías y platos dependientes de la categoría seleccionada | Vue 3, API pública TheMealDB, Axios, PrimeVue, Vue-i18n EN por defecto |
+| Frontend con rutas, JSON Server y formularios | Tend Parcial 2025-1 | Plots, navegación a formulario de inspección, validaciones y alta | Vue 3, Vite, JSON Server 0.17.4, Axios, Vue Router, Vue-i18n, PrimeVue Aura, PrimeFlex, PrimeIcons |
+| Frontend con varios recursos relacionados y reasignación | Hussmann Parcial 2025-2 | Stores/assets/models/types; seleccionar store, tabla read-only y reasignación | Vue 3 Composition API, JSON Server 0.17.4, Axios, PrimeVue, PrimeFlex, PrimeIcons, Vue Router, Vue-i18n, Pinia por bounded context |
+| Backend con un POST y reglas de dominio | SuperHero PC2 2024-2 y Hertz PC2 2025-2 | API REST, persistencia, validación, request/response y errores | ASP.NET Core Web API, C#, .NET 8 o 9 según enunciado, EF Core, MySQL, DDD/CQRS |
+| Backend con dos bounded contexts e interacción por evento | ClickUp Final 2025-2 | Crear Folder, consultar Spaces, integración entre contextos y seed de datos | ASP.NET Core, C#/.NET 9, EF Core, MySQL, DDD, CQRS, ACL, integration event/handler, mediator, i18n de errores |
+
+## 2. Patrones frontend reconocidos
+
+### A. Music Explorer PC1 2026-1
+- API: `https://itunes.apple.com/search?term=daft%20punk&entity=song&limit=12`.
+- Mostrar `trackName`, `artistName`, `collectionName`, `primaryGenreName`, `releaseDate`, `trackViewUrl` y `artworkUrl100`; la imagen usa `artworkUrl100` y el enlace abre `trackViewUrl` en una pestaña nueva.
+- Toolbar `Fake Music Catalog API`, sección `All Songs`, footer con el texto de copyright de 2026 y `Developed by` con código, nombre y apellido.
+- Vue 3/Vite, PrimeVue basado en Material Design y Axios. Textos de interfaz en inglés, ARIA en vistas/componentes principales, WebStorm, responsive web design.
+- Dominios: `public` (home, toolbar, footer) y `music` (componentes, servicios y entidad).
+- Archivos sugeridos: `song-card.component.vue`, `song-list.component.vue`, `song-api.service.js`, `song.entity.js`; kebab-case y `pv-` para componentes PrimeVue como `<pv-card>`.
+- Los archivos fuente creados deben tener comentarios JSDoc con `@summary` y `@author`.
+- Fuera de alcance: Sidebar, internacionalización, routing, autenticación, barra de búsqueda, paginación y favoritos. No añadirlos.
+
+### B. Recipes PC1 2024-1
+- API: `https://dummyjson.com/recipes`.
+- Card/lista `All Recipes`; campos solicitados: `name`, `ingredients[]`, `instructions[]`, `difficulty`, `cuisine`, `caloriesPerServing`, `image`.
+- Toolbar `Fake Recipes API Showcase`; footer con copyright de 2024 y autor.
+- Vue 3/Vite, PrimeVue estilo Material, Axios, ARIA, nombres en inglés, enfoque domain-driven/layered, dominios `public` y `recipes`, archivos con sufijos `.component.vue`, `.service.js`, `.entity.js`, `pv-` en PrimeVue, comentarios JSDoc y README en inglés.
+- Fuera de alcance: Sidebar, internacionalización y routing. No introducirlos por reutilizar otro ejemplo.
+
+### C. SuperHero PC1 2024-2
+- API de búsqueda: `https://www.superheroapi.com/api.php/XXXXXX/search/YYYYYY` (XXXXXX representa el token y YYYYYY el nombre buscado).
+- Cards con datos indicados en el enunciado: id/nombre, powerstats/intelligence, biography/aliases e image/url.
+- Vue 3/Vite, PrimeVue Material, Axios, ARIA, inglés, organización `public` + `superhero`, nombres/sufijos y comentarios como se especifican en el enunciado.
+- Fuera de alcance: Sidebar, internacionalización y routing.
+- No copies tokens reales al código, logs o documentación. Una variable `VITE_*` se expone en el bundle del navegador; en un ejercicio solo debe usarse una clave de prueba/autorizada y nunca una credencial privada.
+
+### D. MealAll PC1 2025-1
+- APIs: `www.themealdb.com/api/json/v1/1/categories.php` y `www.themealdb.com/api/json/v1/1/filter.php?c=Chicken`.
+- Interfaz dividida en dos paneles: izquierda categorías con nombre/logo; al seleccionar una, derecha lista de platos en cards con nombre e imagen.
+- Toolbar de cambio de idioma, inglés por defecto; Vue-i18n para textos indicados. El enunciado tiene textos de contenido escritos en español y pide interfaz inglesa por defecto; usa el texto y traducción exigidos, y no inventes contenido adicional.
+- Vue 3/Vite, PrimeVue Material, Axios, ARIA, `public` + `meal`, layered/domain-driven, naming `.component.vue`, `.service.js`, `.entity.js`, PrimeVue con `pv-`, JSDoc con summary/author y README en inglés.
+- Fuera de alcance señalado: Sidebar y routing. No omitas la alternancia de idioma si el enunciado sí la pide.
+
+### E. Tend Parcial 2025-1 (frontend + JSON Server)
+- JSON Server 0.17.4, ejecutado desde `server` con `json-server --watch db.json`.
+- Endpoints: `GET /plots`, `GET /plots/:id`, `POST /inspections` en `http://localhost:3000`.
+- Rutas: `/` redirige a `/home`; `/home`; `/plots/:id/inspections`; lazy loading; ruta no encontrada muestra la ruta fallida y botón a Home.
+- Toolbar con logo vía Clearbit Logo API, texto `Sustainable Urban Farming`, Home e idioma EN/ES. Inglés por defecto; i18n global y preset PrimeVue Aura.
+- Home: tabla Registered Plots con id, name, location, hectares, monitoringStartDate; botón Register Inspection deshabilitado si `monitoringStartDate` es posterior a hoy.
+- Inspección: plotId de solo lectura desde la ruta; observations, recommendedActions y cropStatus (Good/Warning/Critical) obligatorios; validar que el plot exista antes de POST. Critical muestra Toast warning con mensaje exacto `Critical condition detected. Immediate action required.`; éxito muestra Toast success `Inspection successfully registered.`; después limpiar el formulario excepto plotId.
+- Arquitectura pedida: `public`, `shared`, `plot-management`; Vue 3/Vite, PrimeVue, PrimeFlex, PrimeIcons, Axios, Vue Router, Vue-i18n, JavaScript orientado a objetos, ARIA, archivos `.component.vue` y `.service.js`, pages solo para rutas, componentes reutilizables en components, README y ZIP sin `node_modules`.
+
+### F. Hussmann StoreConnect Parcial 2025-2
+- JSON Server 0.17.4 con endpoints `GET /stores`, `GET /equipment-types`, `GET /equipment-models`, `GET /equipment-assets` (host base `http://localhost:3000`).
+- Toolbar con Clearbit logo y `Hussmann StoreConnect Platform`, navegación Home/New Equipment Asset Assignment, selector EN/ES.
+- Home: elegir Store, mostrar Store Summary; tabla read-only de assets del store con paginación/ordenamiento. Resolver relaciones para presentar nombre de Equipment Type y modelNumber/manufacturer en vez de solo IDs.
+- Assignments: seleccionar asset por serialNumber, mostrar datos relacionados y reasignar a otro store solo si conserva el mismo `retailerId`. Assign actualiza storeId y updatedAt actual; Cancel descarta; ambos regresan a Home.
+- Rutas `/` → `/home`, `/home`, `/assets/equipment/assignments/new` y página no encontrada que muestre ruta + botón Home. Interfaz EN/ES, inglés por defecto, preset (Aura/Material/Lara/Nora) elegido por similitud con Hussmann.
+- Stack: Vue 3 Composition API + Vite, PrimeVue/PrimeFlex/PrimeIcons, Axios, Vue Router con child routes por bounded context, Vue-i18n, Pinia para state management por bounded context, ARIA y diseño responsive.
+- Organización: `shared` y `assets`; capas presentation/infrastructure/application/domain (el enunciado tiene la grafía “aplication” en una línea), subcarpetas views/components/model; `views` para rutas y `components` para elementos reutilizables. Nombres kebab-case; según el enunciado, `.entity.js`, `.store.js`, `.assembler.js` y no aplicar `.component` a los archivos de este examen; confirmar antes de extrapolar a otro examen. Usar variables de entorno para URLs/paths, JSDoc summary/author y README en inglés.
+
+## 3. Patrones backend reconocidos
+
+### A. SuperHero PC2 2024-2 (C#/.NET 8)
+- Endpoint de operación: POST `/api/v1/heros`; responde 201 con resource e ID generado y usa status/body correcto ante errores.
+- Bounded context `HERO` y `Shared`; persistencia MySQL, esquema `local-hero`.
+- `Continent` enum: 1 AMERICAN, 2 EUROPE, 3 AFRICA, 4 ASIA, 5 OCEANIA. El request indica continent como string que coincide con el nombre; valida contra enum. `heroId` va en la ruta, no en body, y es un ID positivo de otro contexto fuera de alcance.
+- `registerEmailAddress` es value object `EmailAddress`, válido/no vacío/máximo 50; `heroPlace` obligatorio máximo 50; country máximo 250; ability máximo 50; registro fecha/hora generada por sistema (no enviada por cliente). ID primario autogenerado. Evitar duplicados según combinación heroId + continent + country + place. Aggregate root con CreatedAt/UpdatedAt.
+- DDD bounded contexts/layers, CQRS, value objects, enum, ORM convention snake_case y tablas plurales en Shared, propiedades en Entity, URLs minúsculas, XML docs en inglés con `<remarks>` de autor, OpenAPI, exceptions. Sin CORS, security ni testing porque están explícitamente fuera del alcance.
+
+### B. Hertz PC2 2025-2 (C#/.NET 9)
+- Endpoint único: POST `/api/v1/rental-orders`; ID autogenerado. HTTP 201 con resource y el ID generado; mensajes de error con status adecuado.
+- Bounded context `services` con `RentalOrder` y `EVehicles`; `Shared` para elementos comunes. MySQL, esquema `Hertz` (preserva el casing indicado para el esquema aunque los identificadores SQL puedan tener sus convenciones propias).
+- Campos: rentalOrderId, customer, vehiclesId, plate, requestedAt, address (owned attribute: Street, City, PostalCode), amount, createdAt, updatedAt. Reglas: no repetir customer + vehiclesId; amount mayor que cero; requestedAt no menor a la fecha del sistema; una plate no puede pertenecer a vehiclesId diferentes; enum EVehicles con 1 Picanto, 2 Soluto, 3 Corolla, 4 RAV4, 5 Versa, 6 Sportage. customer obligatorio max 90; plate max 12; cada parte de address obligatoria max 40; ID autogenerado.
+- Response incluye rentalOrderId, customer, vehiclesId, plate, requestedAt y address. Excluye amount y auditoría. El texto introductorio menciona amount double pero en la especificación de persistencia dice int: señalar la discrepancia; dar prioridad a la especificación concreta de persistencia si no hay aclaración adicional y explicar la decisión.
+- DDD, CQRS, layers Domain/Application/Interfaces/Infrastructure, Resource, Assembler, MySQL/EF Core, rutas en minúsculas, clases/props/métodos PascalCase, campos privados camelCase, SQL snake_case/tablas plurales, XML docs en inglés con `<remarks>`, OpenAPI, README en inglés, manejo de excepciones. Fuera de alcance: CORS, Security, Testing.
+
+### C. ClickUp Final 2025-2 (C#/.NET 9)
+- Endpoints y operaciones acotadas: POST `/api/v1/folders` (id autogenerado, 201, response sin auditoría) y GET `/api/v1/spaces` (colección, sin auditoría).
+- Bounded contexts `Folder`, `Space` y `Shared`; Folder/EVisibilityType pertenecen a Folder; Space/EState a Space. MySQL, esquema `clickup`; raíz de solución `ClickUp.Platform.u<studentcode>` y proyecto API `eb<NRC>u<studentcode>.API`.
+- Space inicial: id 1..4 con workSpaceId 4,3,2,6 y name school/family/friends/sport; states ACTIVE/INACTIVE; color tags en hexadecimal. `EState`: 0 ACTIVE, 1 INACTIVE. `EVisibilityType`: 0 PUBLIC, 1 INTERNAL, 2 PRIVATE. Space seeding al iniciar si faltan registros.
+- Folder requiere id autogenerado, spaceId válido, name, description, visibilityType, createdBy válido como value object y generatedAt. `generatedAt` no puede ser futuro; request admite `yyyy-MM-dd HH:mm:ss`; visibilityType y State se reciben como string.
+- Registrar Folder comprueba el space/workSpace correspondiente; al guardar emite `FolderRegisteredEvent` con spaceId y name. Un handler actualiza el name del Space referenciado si difiere. Implementar ACL entre bounded contexts; integration event declarado en Shared para el monolito y handler en el contexto receptor, conforme al enunciado.
+- Aggregate Roots Folder/Space tienen CreatedAt/UpdatedAt generados automáticamente. Enunciado especifica `EntityFrameworkCore.CreatedUpdatedDate`, Fluent API, naming strategy (snake_case, tablas plurales), `Cortex.Mediator` para event handling y Accept-Language EN/EN-US o ES/ES-PE, defecto inglés. OpenAPI, XML docs en inglés, `<remarks>` con autor, README en inglés, manejo de excepciones. Fuera de alcance: CORS, Security y Testing.
+
+## 4. Lecciones comunes que debe aplicar el agente
+
+1. **No existe una única plantilla universal.** La PC1 Music es simple y excluye routing/i18n; Tend sí exige ambas. Hussmann requiere Pinia por bounded context, pero un examen que no lo pide no debe recibirlo por defecto.
+2. **La sección fuera de alcance tiene valor contractual.** No agregar funciones exclusivas de otros exámenes.
+3. **La rúbrica importa.** En varios frontend, los criterios de mayor peso son features y UI; en backend, son endpoints, persistencia y reglas de negocio. Prioriza por los pesos de la rúbrica adjunta a la actividad actual, no por el peso de este resumen.
+4. **Payload y response no son la misma cosa.** IDs y auditoría suelen ser generados por servidor; ciertos campos se persisten, pero se excluyen de la respuesta. Construye Resource/Assembler cuando se solicite.
+5. **Validación de negocio no equivale a validación de forma.** Comprueba reglas de combinación y referencias en la capa de dominio/aplicación apropiada, no solo con atributos del request.
+6. **Datos relacionados requieren resolver las relaciones reales.** Hussmann pide nombres/modelos, no mostrar IDs en su lugar.
+7. **No inventar metadatos.** Sustituye NRC, código, sección, autor y año solo a partir del enunciado actual. Muestra como placeholder cualquier valor que falte.
+8. **Las muestras antiguas pueden contener erratas o contradicciones.** Indica las contradicciones materiales y justifica la interpretación elegida; no transformes detalles históricos en reglas del curso vigente.
+
+
+## Plantillas canónicas que mandó el usuario
+
+### Frontend: `learning-center-main.zip`
+Patrón para PC1/Parcial: Vue 3 + Vite/JavaScript por bounded context, capas `domain`, `application` (Pinia store), `infrastructure` (Axios/API/assemblers) y `presentation` (views/components/routes); `shared` solo para recursos realmente comunes. `main.js` registra PrimeVue con prefijo `pv-`; incluye `BaseApi`, `BaseEndpoint`, JSON Server, locales EN/ES y módulos de ruta. El requisito del examen actual determina qué partes usar.
+
+### Backend: `learning-center-platform-master 2.zip`
+Patrón para PC2/Final: ASP.NET Core, .NET 10 en el ZIP, EF Core/MySQL, contextos fuente `Profiles`, `Publishing` y `Shared`, capas `Domain`, `Application`, `Infrastructure`, `Interfaces/Rest`, `Resources`, Commands/Queries, servicios de aplicación, repositorios, Resources/Assemblers, `Result<T>`, ProblemDetails, localización y auditoría. Si la actividad exige .NET 8/9, ajustar framework/paquetes al enunciado, no al ZIP de referencia.
+
+### Límites de interpretación
+- `PC1`/`Parcial` y `PC2`/`Final` solo seleccionan un patrón predeterminado, no garantizan el tipo de tecnología del futuro enunciado. El contenido del PDF actual manda.
+- El README del backend enumera IAM, pero la carpeta no aparece en el árbol físico adjunto; no inventar su código. En el frontend, IAM existe pero las rutas están comentadas/no integradas por defecto.
+- No subir valores reales de `.env*` ni `appsettings*.json` a fuentes de conocimiento.

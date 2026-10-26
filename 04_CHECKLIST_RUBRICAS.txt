@@ -1,0 +1,128 @@
+# Checklist de cumplimiento y rúbricas para el agente
+
+## A. Matriz de trazabilidad obligatoria
+
+Antes de implementar una actividad extensa, crea una tabla con estas columnas:
+
+| ID | Requisito literal/resumen fiel | Tipo | Archivo o capa | Prueba verificable | Estado |
+|---|---|---|---|---|---|
+
+Tipos sugeridos: UI, API, ruta, modelo, regla de negocio, persistencia, formato, idioma, arquitectura, documentación, empaquetado, exclusión. Estado: Pendiente / Implementado / Verificado / No verificable. No uses “Verificado” sin realizar la comprobación.
+
+Reglas para llenar la tabla:
+- Copia con precisión los nombres, formatos, textos, estados, enums y límites del enunciado; no reescribas requisitos ambiguos como si fueran inequívocos.
+- Incluye requisitos negativos como “no incluir amount en response” o “no implementar routing”.
+- Incluye los requisitos de inicio/compilación, README, autor, archivo ZIP, eliminar `node_modules`, OpenAPI y XML/JSDoc si aparecen.
+- Vincula cada regla de negocio con una validación/caso de prueba concreto.
+- Si existe una sección de rúbrica, incluye cada criterio y su ponderación exacta. No asumas los mismos pesos que otro PDF.
+
+## B. Preflight para frontend Vue
+
+### Build y entorno
+- [ ] Se creó/abrió el proyecto correcto con Vite y Vue 3.
+- [ ] Se mantuvieron versiones y dependencias requeridas por el enunciado y el lockfile existente.
+- [ ] `npm install` o el gestor pedido instala sin fallos; `npm run dev` abre la aplicación.
+- [ ] `npm run build` se ejecuta, si el entorno está disponible; reportar resultado real.
+- [ ] Las variables de entorno se usan cuando el enunciado lo pide y tienen `.env.example` sin secretos.
+
+### Contrato y funcionalidad
+- [ ] Se usa el endpoint exacto y los parámetros exactos; los campos mostrados son los pedidos.
+- [ ] Relaciones entre datos se resuelven correctamente y no se presenta un ID cuando se pide nombre/modelo.
+- [ ] Formularios validan campos requeridos y reglas concretas; botones disabled/enabled siguen la condición exigida.
+- [ ] Las operaciones realizan acciones reales (no son botones decorativos); se contemplan success/error/loading/empty cuando aplica.
+- [ ] Los mensajes y severidades de Toast son los literales del enunciado cuando éste los fija.
+- [ ] Rutas, redirects, lazy loading, 404/page-not-found y rutas dinámicas se implementan solo si se solicitan.
+- [ ] Idioma predeterminado, alternativa EN/ES, claves de traducción y textos de UI coinciden con la actividad actual.
+- [ ] PrimeVue, preset/tema, PrimeFlex, PrimeIcons, Axios, Pinia y ARIA están configurados solo donde se requiere.
+
+### Organización y calidad
+- [ ] Se respeta la estructura de dominios/capas pedida; `views/pages` corresponde a rutas y componentes a partes reutilizables cuando ese patrón se exija.
+- [ ] Nombres físicos en kebab-case; sufijos `.component.vue`, `.service.js`, `.entity.js`, `.store.js`, `.assembler.js` exactamente según el examen actual.
+- [ ] Componentes PrimeVue con prefijo `pv-` si el enunciado lo pide; evitar trasladar esta convención si otra especificación difiere.
+- [ ] Archivos fuente con JSDoc `@summary` y `@author` cuando sea obligatorio; no copiar el autor de una muestra.
+- [ ] Interfaz responsive y con ARIA cuando así se exige.
+- [ ] README en inglés con descripción, features, dependencias y autor si lo pide el enunciado.
+
+### Entrega frontend
+- [ ] Nombre del ZIP coincide literalmente con patrón + NRC/código/sección actuales.
+- [ ] Antes de empaquetar, se excluye `node_modules`; se conserva el lockfile y los recursos `server/db.json` necesarios.
+- [ ] El ZIP contiene archivos de proyecto y se puede abrir desde WebStorm.
+- [ ] No se implementaron elementos fuera del alcance.
+
+## C. Preflight para backend ASP.NET Core / EF Core
+
+### Build y contrato REST
+- [ ] La solución/proyecto tienen nombres correctos y usan la versión .NET del enunciado, no la instalada más reciente por defecto.
+- [ ] Cada endpoint respeta ruta en minúsculas/kebab-case, método HTTP, path/query/body y cantidad de operaciones pedida.
+- [ ] Los IDs autogenerados no se piden del cliente y se devuelven cuando el response lo exige.
+- [ ] Crear retorna 201 cuando se pide; cada éxito/error tiene status y body documentados, incluyendo errores de validación, conflicto y referencia inexistente según el contrato.
+- [ ] OpenAPI documenta resumen, operación, request, respuesta exitosa y posibles errores si es solicitado.
+
+### Dominio y reglas de negocio
+- [ ] Entidades/Aggregate Roots, Value Objects y enumeraciones están definidos con restricciones exactas.
+- [ ] Las reglas compuestas/únicas están comprobadas usando datos persistidos cuando corresponde; no hay validación solo de cliente.
+- [ ] Se comprueban referencias entre bounded contexts/agregados cuando el enunciado lo solicita.
+- [ ] Las fechas usan comparación correcta y formato exacto (por ejemplo `yyyy-MM-dd HH:mm:ss` cuando corresponda).
+- [ ] Auditoría se genera por sistema y se oculta del response si así se indica.
+- [ ] Requests/Responses/Resources/Assemblers separan contrato API de entidades; no se filtran campos prohibidos (por ejemplo `amount`, `createdAt`, `updatedAt`).
+
+### Persistencia y arquitectura
+- [ ] MySQL/PostgreSQL, schema y entidades de persistencia corresponden a lo pedido.
+- [ ] EF Core Fluent API, owned attributes/types, relaciones, keys, índices, defaults, naming strategy (snake_case/plurales) aplican cuando son requisitos.
+- [ ] Migraciones/creación de esquema, connection string de ejemplo, seeding y datos iniciales están resueltos cuando se piden.
+- [ ] Bounded contexts y capas Domain/Application/Interfaces/Infrastructure están separados conforme al modelo/repo de referencia.
+- [ ] CQRS/Mediator/ACL/integration events/event handlers se implementan cuando se piden y se puede seguir el flujo emisor → evento → handler → actualización.
+- [ ] Excepciones/mensajes y localización Accept-Language están alineados con los idiomas/culturas requeridos.
+- [ ] XML documentation comments en inglés con propósito, parámetros, returns y `<remarks>` de autor cuando son exigidos.
+- [ ] README en inglés con descripción y autor si se exige.
+
+### Entrega backend
+- [ ] Ejecutar/reportar `dotnet restore`, `dotnet build` y pasos de configuración disponibles; no alegar que se probaron si no se ejecutaron.
+- [ ] Verificar requests en OpenAPI/Postman con al menos un caso exitoso y casos de error derivados de cada regla.
+- [ ] Respetar exclusiones (en algunos ejemplos: CORS, security, testing fuera de alcance).
+
+## D. Rúbricas observadas en los PDFs (solo referencia)
+
+### PC1/frontend: patrón de criterios común
+En rúbricas como Recipes y Music Explorer se observan categorías del orden de: building/ejecución (2 puntos), interfaz (3), features/consumo de datos (7), organización de código (3), calidad de código (3) y nomenclatura (2). Úsalo como referencia para el checklist; **transcribe siempre la rúbrica real de la nueva actividad**. En el examen Hussmann la sección de Home, navegación e i18n se evalúa de forma compuesta; no se debe evaluar como la plantilla de Music.
+
+### PC2/backend: patrón de criterios común
+En Hertz se valora build/ejecución (2), endpoint (6), reglas de negocio (4), organización (3), calidad (3) y naming (2). En el final ClickUp hay criterios separados para cada endpoint además de reglas de negocio, arquitectura/calidad, convenciones y documentación. No aplicar pesos de Hertz a ClickUp u otro examen.
+
+### Qué significa aspirar a “Sobresaliente” según las muestras
+- Build: inicia sin errores y el API/UI es accesible en la ruta pedida.
+- Funcionalidad: cubrir todos los campos, flujos, relaciones, validaciones, escenarios y estados de error explícitos; no solo la ruta feliz.
+- Persistencia: demostrar que datos escritos se almacenan con estructura, tabla y schema requeridos.
+- UI: presentar la información solicitada, responsive cuando se exige y con navegación/idioma correctos.
+- Organización: capas y dominios consistentes; lógica de dominio separada de UI/controller/persistencia.
+- Calidad y naming: código claro, eficiente, bien comentado, en inglés donde se pide, archivos/rutas con convenciones exactas.
+- Documentación: OpenAPI, README y XML/JSDoc cuando se exigen.
+
+## E. Matriz de casos de prueba recomendada
+
+Para cada requisito, selecciona al menos un caso positivo y los negativos indicados por el enunciado. Ejemplos para usar solo cuando aplique al examen:
+
+| Área | Caso positivo | Casos negativos / borde |
+|---|---|---|
+| API externa | Respuesta con resultados renderizada | API sin resultados, fallo HTTP, campos opcionales vacíos |
+| JSON Server | GET devuelve colecciones válidas | Id inexistente, servidor detenido, POST inválido |
+| UI dinámica | Selección actualiza lista/detalle | Selección vacía, datos relacionados ausentes |
+| Formulario | Datos válidos registrados | Campo vacío, enum inválido, referencia inexistente |
+| Fecha | Fecha permitida guardada | Fecha pasada/futura prohibida según regla y límites de hoy |
+| Unicidad | Nueva combinación válida | Duplicado exacto y combinación permitida que se parece al duplicado |
+| Owned object/Value Object | Todos los campos válidos | Email/formato/longitud nulos o inválidos |
+| Enum | Valor válido por nombre/id según contrato | Nombre desconocido, valor numérico fuera de rango, formato incorrecto |
+| Respuesta | Resource incluye campos permitidos | Asegurar ausencia de campos prohibidos/auditoría |
+| Integration Event | Folder emite evento y handler actualiza Space | Space no existe, nombre idéntico, fallo en la referencia |
+
+No agregues pruebas automatizadas si la actividad las excluye; puedes proponer pruebas manuales de verificación si no están excluidas.
+
+## F. Entrega final: formato mínimo
+
+- Resumen de cumplimiento y decisiones de interpretación.
+- Árbol de archivos finales.
+- Lista de comandos para ejecutar.
+- Matriz de requisitos con estado real.
+- Request/response examples y casos de error si es backend; pasos UI si es frontend.
+- Nombre exacto de ZIP y contenido que se debe incluir/excluir.
+- Lista de pendientes que dependen de NRC, código, autor, base de datos o archivo no proporcionado.

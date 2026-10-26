@@ -1,0 +1,89 @@
+# Contexto del curso: Aplicaciones Web y herramientas técnicas
+
+## 1. Fuente y discrepancia de identificación
+
+Este resumen se elaboró a partir del archivo adjunto `-technology-stack_v1Markdown.md`, cuyo encabezado dice **“Cuadro de Actividades Técnicas - Curso: Aplicaciones Web Código: 1ASI0730”**. El prompt inicial del agente menciona **NRC 16127**. Estos identificadores se conservan como datos distintos: no se puede concluir solo con estos archivos que sean equivalentes.
+
+La tabla original tiene celdas desalineadas en varias filas y algunas URL parecen desplazadas respecto a la herramienta que describen. Por eso, este resumen organiza las herramientas listadas y conserva las semanas/observaciones más claras; no debe usarse como una transcripción exacta de cada URL de instalación.
+
+## 2. Tecnologías y herramientas que aparecen en el material
+
+### Frontend
+- Node.js.
+- Vue (Vue 3 según el contexto configurado para el agente) y `create-vue`.
+- Vite y PrimeVue según el stack técnico que indicó el usuario.
+- JetBrains WebStorm.
+- JSON Server para simular una API en ejercicios frontend.
+- Postman para solicitudes y pruebas HTTP.
+
+### Backend
+- .NET / ASP.NET Core.
+- Microsoft Visual Studio Community Edition y JetBrains Rider.
+- Entity Framework Core según el stack técnico indicado en el prompt.
+- MySQL Server Community Edition y MySQL Workbench.
+- PostgreSQL también aparece en las semanas de backend del cuadro de actividades.
+
+**Cuidado con el alcance:** el backend de ejemplo `CatchUpPlatform` usa MySQL y .NET 10. El hecho de que el cuadro mencione PostgreSQL no significa que `CatchUpPlatform` soporte ambos proveedores.
+
+### Modelado, gestión y diseño
+- Pivotal Tracker y Trello para gestión/seguimiento de tareas.
+- UXPressia para artefactos de experiencia de usuario/personas y journeys.
+- Miro y Lucidchart para diagramas y colaboración visual.
+- Figma / Adobe XD para diseño de interfaz.
+- Structurizr y PlantUML para documentación/diagramas de arquitectura.
+- Microsoft Office 365.
+
+## 3. Cronograma de referencia por semana
+
+La siguiente tabla resume lo que está identificable en la fuente, sin atribuir actividades específicas que el documento no detalla.
+
+| Semana | Herramientas/temas mencionados | Observación explícita de la fuente |
+|---|---|---|
+| 1 | Pivotal Tracker, Trello, UXPressia, Miro, Lucidchart, Figma, Office 365, Structurizr, PlantUML, .NET, Visual Studio Community, Rider | Herramientas de planificación, modelado y entorno de desarrollo; se indica que varias se usan en el Final Project. |
+| 2 | .NET, Visual Studio Community, Rider, ASP.NET Core | Desarrollo backend con ASP.NET Core. |
+| 3 | Postman, Node.js, WebStorm, Vue | Instalación de Postman y Node.js; instalar WebStorm mediante Toolbox; configurar Vue/create-vue. |
+| 4 | Herramientas de gestión/diseño, Postman, Node.js, WebStorm, Vue, PrimeVue | Exposición y sustentación de artefactos elaborados en Final Project. |
+| 5 | Postman, Node.js, WebStorm, Vue, PrimeVue, JSON Server | Instalar/configurar JSON Server. |
+| 6 | Postman, Node.js, WebStorm, Vue, PrimeVue | Continuidad del stack frontend. |
+| 7 | Herramientas de gestión/modelado, Postman, Node.js, WebStorm, Vue, PrimeVue | Exposición y sustentación de artefactos elaborados en Final Project. |
+| 8 | Postman, Node.js, WebStorm, Vue, PrimeVue | **Examen parcial**. |
+| 9 | .NET, ASP.NET Core, Visual Studio Community, MySQL Server, MySQL Workbench, PostgreSQL, Postman, Node.js, WebStorm, Vue, PrimeVue | Se indica instalar MySQL Server Community Edition, MySQL Workbench y PostgreSQL. |
+| 10 | .NET, ASP.NET Core, Visual Studio Community, MySQL, Workbench, PostgreSQL, Postman, Node.js, WebStorm, Vue, PrimeVue | Continuidad de herramientas full stack. |
+| 11 | .NET, ASP.NET Core, Visual Studio Community, MySQL, Workbench, PostgreSQL, Postman, Node.js, WebStorm, Vue, PrimeVue | Continuidad de herramientas full stack. |
+| 12 | Herramientas de gestión/modelado, .NET, ASP.NET Core, bases de datos, Postman, Node.js, WebStorm, Vue, PrimeVue | Exposición y sustentación de artefactos elaborados en Final Project. |
+| 13 | .NET, ASP.NET Core, MySQL, Workbench, PostgreSQL, Postman, Node.js, WebStorm, Vue, PrimeVue | Continuidad de herramientas full stack. |
+| 14 | .NET, ASP.NET Core, MySQL, Workbench, PostgreSQL, Postman, Node.js, WebStorm, Vue, PrimeVue | Continuidad de herramientas full stack. |
+| 15 | Herramientas de gestión/modelado, .NET, ASP.NET Core, bases de datos, Postman, Node.js, WebStorm, Vue, PrimeVue | Exposición y sustentación de artefactos elaborados en Final Project. |
+| 16 | .NET, ASP.NET Core, Visual Studio Community, MySQL, Workbench, PostgreSQL, Postman, Node.js, WebStorm, Vue, PrimeVue | **Examen final**. |
+
+## 4. URL visibles en el archivo de actividades
+
+La fuente original presenta varias URL partidas o desalineadas frente al nombre de la herramienta. Las siguientes direcciones sí aparecen de manera identificable en el documento; confirma que corresponden a la actividad antes de usarlas:
+
+- Pivotal Tracker: `https://www.pivotaltracker.com/`
+- Trello: `https://trello.com/`
+- UXPressia: `https://uxpressia.com/` (el enlace aparece en una fila distinta de la que menciona UXPressia).
+- Miro: `https://miro.com/` (el enlace aparece desplazado en la tabla).
+- Lucidchart: `https://www.lucidchart.com/` (el enlace aparece desplazado en la tabla).
+- .NET download: `https://dotnet.microsoft.com/download` (el URL está partido en dos líneas y ubicado junto a una fila que no lo describe claramente).
+- Visual Studio developer offers: `https://visualstudio.microsoft.com/` seguido de `/es/free-developer-offers/` en la tabla; revisa el destino antes de abrirlo.
+- JetBrains Toolbox: `https://www.jetbrains.com/toolbox-app/` y `https://www.jetbrains.com/toolbox-app/faq/`.
+- Vue quick start: `https://vuejs.org/guide/quick-start.html#with-build-tools`
+- PrimeVue setup: `https://primefaces.org/primevue/setup`
+- Postman installation: `https://learning.postman.com/docs/postman/launching-postman/installation-and-updates/`
+- Node.js download: `https://nodejs.org/en/download/`
+- JSON Server: `https://www.npmjs.com/package/json-server#getting-started`
+- MySQL Workbench: `https://dev.mysql.com/downloads/workbench/`
+- MySQL: `https://dev.mysql.com/downloads/mysql/`
+- PostgreSQL: `https://www.postgresql.org/download/`
+
+El documento menciona Figma, Structurizr, PlantUML, Office 365 y otras herramientas, pero la columna de enlaces no permite asignarles con confianza una URL de instalación individual. No inventes una URL atribuyéndola al archivo.
+
+## 5. Cómo debe usar el agente este contexto
+
+1. Determina por el enunciado qué unidad/stack se está evaluando; no impongas backend .NET a una práctica de Vue/JSON Server.
+2. Para actividades frontend, elige Vue/PrimeVue/JSON Server solo si se solicitan o aparecen en el ejemplo específico.
+3. Para actividades backend, identifica proveedor de base de datos y arquitectura requerida en el enunciado. No supongas que siempre es MySQL o que siempre es PostgreSQL.
+4. Postman sirve para validar requests, status codes, headers y payloads; incluye ejemplos cuando sean útiles.
+5. Para entregables de Final Project, contempla artefactos de planificación, diseño UX/UI, arquitectura y demostración técnica cuando el enunciado los pida.
+6. En semanas de exámenes, prioriza la consigna y los ejemplos usados en clase; muestra la solución y una explicación breve que permita entenderla y defenderla.

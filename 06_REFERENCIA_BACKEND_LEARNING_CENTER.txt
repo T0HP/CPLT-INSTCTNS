@@ -1,0 +1,92 @@
+# Referencia canónica BACKEND: `learning-center-platform-master`
+
+## Uso y prioridad
+Este ZIP es la plantilla de referencia aportada por el usuario para organizar el BACKEND de PC2 y Examen Final. Debe orientar la estructura, naming, capas y patrones de la solución cuando el enunciado actual los requiera. El PDF/rúbrica actual prevalece siempre, especialmente en versión .NET, endpoints, bounded contexts, funciones fuera del alcance y nombre de entrega.
+
+## Stack observado en el proyecto
+- Proyecto web ASP.NET Core: `Acme.Center.Platform/Acme.Center.Platform.csproj` declara `TargetFramework=net10.0`, `Nullable=enable` e `ImplicitUsings=enable`.
+- Entity Framework Core `10.0.8`, proveedor `MySql.EntityFrameworkCore` `10.0.7`.
+- `Cortex.Mediator` `3.1.2`, `Swashbuckle.AspNetCore` `10.2.0`, `BCrypt.Net-Next` `4.2.0`, componentes JWT.
+- Persistencia relacional MySQL; EF Core migrations; Dockerfile y `docker-compose.yaml` incluidos.
+
+Estos números describen el ZIP de referencia. Los ejemplos históricos varían entre .NET 8 y .NET 9; nunca cambies el Target Framework que pide la actividad para copiar ciegamente los paquetes de este proyecto.
+
+## Estructura de proyecto observada
+```text
+learning-center-platform-master/
+  learning-center-platform.sln
+  Acme.Center.Platform/
+    Program.cs
+    Acme.Center.Platform.csproj
+    appsettings*.json
+    Migrations/
+    Profiles/
+      Domain/Model/{Aggregates,Commands,Errors,Queries,ValueObjects}/
+      Domain/Repositories/
+      Application/{Acl,CommandServices,QueryServices,Internal/CommandServices,Internal/QueryServices}/
+      Infrastructure/Persistence/EntityFrameworkCore/{Configuration/Extensions,Repositories}/
+      Interfaces/{Acl,Rest/Resources,Rest/Transform}/
+      Resources/*.resx
+    Publishing/
+      Domain/Model/{Aggregates,Commands,Entities,Errors,Events,Queries,ValueObjects}/
+      Domain/Repositories/
+      Application/{CommandServices,QueryServices,Internal/CommandServices,Internal/QueryServices,Internal/EventHandlers}/
+      Infrastructure/Persistence/EntityFrameworkCore/{Configuration/Extensions,Repositories}/
+      Interfaces/Rest/{Resources,Transform}/
+      Resources/*.resx
+    Shared/
+      Domain/{Model,Repositories}/
+      Application/{Internal/EventHandlers,Model}/
+      Infrastructure/{Interfaces, Mediator, Persistence, Pipeline}/
+      Interfaces/Rest/ProblemDetails/
+      Resources/{Errors}/
+  docs/{software-architecture.dsl,user-stories.md,class-diagram.puml}
+  Dockerfile, docker-compose.yaml
+```
+
+**Observación clave:** el árbol real de `Acme.Center.Platform` contiene `Profiles`, `Publishing`, `Shared` y `Migrations`; no hay una carpeta `IAM`. Aunque el README enumera IAM en la descripción, no inventes una implementación IAM en este ZIP ni lo des por integrado sin inspeccionar más código.
+
+## Capas y responsabilidades (patrón a conservar)
+- **Domain**: Aggregates/Entities, Value Objects, enums, Commands, Queries, Events, Errors y contratos de repositorios. Mantiene reglas del dominio; evita dependencias HTTP/EF innecesarias.
+- **Application**: interfaces e implementaciones de command/query services, coordinación de casos de uso, handlers de eventos y ACL/facades cuando aplique. El patrón del proyecto usa Cortex.Mediator y `Result<T>` para resultados de operaciones.
+- **Infrastructure**: repositorios EF Core concretos, mapeo de persistencia, `AppDbContext`, UnitOfWork, interceptores de auditoría, middleware y configuración técnica.
+- **Interfaces/Rest**: controllers, Resources para request/response, assemblers/transformers y mapeo de resultados a HTTP. Los controllers delegan en servicios; no concentran lógica de negocio.
+- **Shared**: abstracciones y servicios transversales reutilizables: `Result`, `Error`, `IEvent`, repositorio base, `IUnitOfWork`, `AppDbContext`, convención de nombres, auditoría y `ProblemDetails`.
+- **Resources**: localización de mensajes con `.resx` inglés/español en Shared y los contextos pertinentes.
+
+## Flujo de petición
+1. Un controller recibe un `Resource` JSON y enlaza route/body/cancellation token.
+2. Un assembler convierte el Resource a Command/Query.
+3. Un servicio de aplicación valida reglas de negocio y coordina entidades/agregados y repositorios.
+4. Un repositorio EF Core y UnitOfWork persisten; `AppDbContext` aplica las configuraciones y convenciones compartidas.
+5. El controller/assembler convierte entidad o `Result<T>` a Response Resource y responde con el status correcto (por ejemplo, 201 Created para creación si lo exige el enunciado).
+6. Los errores se convierten a mensajes localizados y `ProblemDetails`; el middleware global gestiona excepciones no controladas.
+
+## Patrones y convenciones observados
+- Contextos con carpetas separadas (`Profiles`, `Publishing`, `Shared`) y capas Domain/Application/Infrastructure/Interfaces.
+- Commands y Queries como modelos explícitos; command/query services separados.
+- Interfaces de repositorio en Domain y repositorios concretos en Infrastructure.
+- `Resource` separado de entidades; assembler para `Resource → Command` y `Entity → Resource`.
+- `Result<T>`/enums de errores y assembler de ActionResult para traducir resultados a HTTP.
+- EF Core con Fluent API (`Apply...Configuration`), `UseSnakeCaseNamingConvention()` y `AuditableEntityInterceptor` aplicado por `AppDbContext`.
+- Rutas convertidas a minúsculas y convención de ruta kebab-case configurada en `Program.cs`.
+- OpenAPI/Swagger con anotaciones; `IStringLocalizer`, recursos en inglés/español, middleware global y `CancellationToken` en operaciones asíncronas.
+- `Profiles` expone ACL/facade vía `ProfilesContextFacade` e interfaz en `Interfaces/Acl`.
+- `Publishing` demuestra command/query, un evento de categoría y su handler; `Shared` define las abstracciones de evento.
+- MySQL y migraciones de EF Core; `Program.cs` registra dependencias, configura `UseMySQL`, mediator/localización, aplica migraciones al iniciar y activa Swagger en Development.
+
+Estos patrones se aplican solo cuando el alcance actual los pida o la plantilla indicada los usa. No añadas ACL/eventos/seed/localización a una tarea simple de un endpoint si no son requisitos, y no los omitas si el examen los exige explícitamente.
+
+## Cómo aplicar a PC2 / Final
+- PC2 suele pedir un endpoint o conjunto pequeño de operaciones, reglas de negocio y persistencia. Implementa solo las operaciones especificadas, incluso si la plantilla tiene CRUD más amplio.
+- Examen Final puede exigir varios bounded contexts, ACL, integration event/handler, seeding y auditoría. Construye el flujo completo entre contextos si el enunciado lo pide.
+- Siempre mapea cada requisito de negocio a una validación, persistencia/relación y caso de prueba. Comprueba que la respuesta no incluya campos explícitamente excluidos (por ejemplo campos de auditoría o datos de entrada privados).
+- Usa XML documentation/`<remarks>`, README en inglés, OpenAPI, snake_case en DB, tablas plurales, URLs lowercase/kebab-case y status HTTP según el enunciado, si corresponde a esa actividad.
+
+## Configuración y seguridad
+El ZIP contiene archivos `appsettings*.json` con configuración de conexión y secreto JWT, además de `docker-compose.yaml` que referencia variables de entorno. Los valores de secretos no deben copiarse en este documento, Knowledge, README ni respuestas. Antes de compartir repositorios con Copilot, elimina o redacta secretos reales y rota credenciales si accidentalmente se publicaron. Preferir variables de entorno/secret stores para valores sensibles.
+
+El ZIP también incluye carpetas generadas como `bin/`, `obj/` y `.idea/`. No las trates como fuente principal ni las incluyas innecesariamente en un ZIP de entrega. Conserva los archivos fuente, `.csproj`, `.sln`, migraciones, configuración sin secretos y archivos de documentación que sean parte de la solución.
+
+## Cómo usar esta referencia para BACKEND PC2 / Final
+Si el usuario dice `PC2`, `Final` o `backend`, selecciona este patrón como punto inicial salvo que el enunciado actual indique otra arquitectura/stack. Primero determina el Target Framework solicitado y las operaciones exactas. Renombra el proyecto, namespace, esquema y entidades según el NRC/código/empresa del enunciado, nunca copiando el nombre de Learning Center por defecto.
